@@ -4,15 +4,20 @@ import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserInformationService {
   private nameSubject = new BehaviorSubject<string>('');
   private playerIdSubject = new BehaviorSubject<string|undefined>(undefined);
   private isSpectatorSubject = new BehaviorSubject<boolean>(false);
+  private isMasterSubject = new BehaviorSubject<boolean>(false);
 
   constructor() {
     let name = this.loadFromLocalStorage('name');
     let isSpectator = this.loadFromLocalStorage('isSpectator') === "true";
+    let playerId = this.loadFromLocalStorage('playerId');
+
     this.nameSubject.next(name);
+    this.playerIdSubject.next(playerId);
     this.isSpectatorSubject.next(isSpectator)
   }
 
@@ -28,6 +33,11 @@ export class UserInformationService {
 
   setPlayerIdSubject(playerId: string | undefined) {
     this.playerIdSubject.next(playerId);
+    this.saveToLocalStorage('playerId', playerId);
+  }
+
+  setMasterSubject(master: boolean) {
+    this.isMasterSubject.next(master);
   }
 
   nameObservable(): Observable<string> {
@@ -44,6 +54,14 @@ export class UserInformationService {
 
   isSpectator(): boolean {
     return this.isSpectatorSubject.getValue();
+  }
+
+  masterObservable(): Observable<boolean> {
+    return this.isMasterSubject.asObservable();
+  }
+
+  isMaster(): boolean {
+    return this.isMasterSubject.getValue();
   }
 
   getPlayerId(): string | undefined {

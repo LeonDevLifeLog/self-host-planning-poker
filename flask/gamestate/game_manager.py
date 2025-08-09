@@ -64,6 +64,11 @@ class GameManager:
         game.name = game_name
         StoredGame.update(name=game_name).where(StoredGame.uuid == uuid.UUID(game_uuid)).execute()
         return game.info()
+    
+    def get_player(self, game_uuid: str, player_uuid: str) -> Player:
+        game = self.__get_ongoing_game(game_uuid)
+        player = game.get_player(player_uuid)
+        return player
 
     def set_player_name(self, game_uuid: str, player_uuid: str, player_name: str) -> dict:
         game = self.__get_ongoing_game(game_uuid)

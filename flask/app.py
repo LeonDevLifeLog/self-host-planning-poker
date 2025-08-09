@@ -67,7 +67,11 @@ def serve_assets(path):
 
 @socketio.event
 def join(data):
-    player_id = str(uuid.uuid4())
+    player_id = str(data['playerId'])
+    
+    if len(player_id) <= 0 or player_id == 'None':
+        player_id = str(uuid.uuid4())
+        
     session['player_id'] = player_id
     player_name = data['name']
     spectator = data['spectator']
@@ -78,8 +82,12 @@ def join(data):
 
     info, state = gm.join_game(game_id, player_id, player_name, spectator)
     emit('state', state, to=game_id, json=True)
+    
+    player = gm.get_player(game_id, player_id)
+    player_is_master = player.master
 
     info['playerId'] = player_id
+    info['isMaster'] = player_is_master
     return info
 
 

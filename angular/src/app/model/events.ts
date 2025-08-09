@@ -3,11 +3,13 @@ export interface GameInfo {
   deck: string;
   revealed: boolean;
   playerId?: string;
+  isMaster: boolean;
 }
 
 export interface Player {
   name: string;
   spectator: boolean;
+  master: boolean;
 }
 
 export interface PlayerState extends Player {

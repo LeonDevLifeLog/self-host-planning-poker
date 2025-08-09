@@ -13,6 +13,7 @@ import { PathLocationStrategy } from '@angular/common';
 @Injectable({
   providedIn: 'root'
 })
+
 export class CurrentGameService {
   private readonly totalAttempts = 10;
   private readonly reconnectDelaySeconds = 5;
@@ -24,6 +25,7 @@ export class CurrentGameService {
 
   private stateSubject = new BehaviorSubject<GameState>({});
   private infoSubject = new BehaviorSubject<GameInfo | null>(null);
+  private revealedBlockVisibleSubject = new BehaviorSubject<boolean>(true);
   private newGameSubject = new Subject<void>();
 
   constructor(private router: Router,
@@ -83,6 +85,10 @@ export class CurrentGameService {
     return this.stateSubject.asObservable();
   }
 
+  public get revealedBlockVisibleSubject$() : Observable<boolean> {
+    return this.revealedBlockVisibleSubject.asObservable();
+  }
+
   public get gameInfo$(): Observable<GameInfo | null> {
     return this.infoSubject.asObservable();
   }
@@ -95,6 +101,10 @@ export class CurrentGameService {
     return this.gameInfo$.pipe(
       map((info: GameInfo | null) => info !== null ? info.revealed : false)
     );
+  }
+
+   public get revealedBlockVisibility$(): Observable<boolean> {
+    return this.revealedBlockVisibleSubject$.pipe(map((visible: boolean) => this.userInformation.isMaster()));
   }
 
   public get deck$(): Observable<Deck> {
@@ -111,6 +121,7 @@ export class CurrentGameService {
     .emitWithAck('join', {
       game: gameId,
       name: this.userInformation.getName(),
+      playerId: this.userInformation.getPlayerId(),
       spectator: this.userInformation.isSpectator()
     })
     .then((response: GameInfo | ErrorMessage) => {
@@ -121,6 +132,8 @@ export class CurrentGameService {
         } else {
           this.infoSubject.next(response);
           this.userInformation.setPlayerIdSubject(response.playerId);
+          this.userInformation.setMasterSubject(response.isMaster);
+
           return true;
         }
       },

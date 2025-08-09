@@ -14,7 +14,10 @@ class Game:
         self.__revealed = False
 
     def player_joins(self, uuid: str, player: Player):
-        self.__state[uuid] = player
+        if uuid not in self.__state.keys():
+            if len(self.__state) <= 0:
+                player.master = True                
+            self.__state[uuid] = player
 
     def player_leaves(self, uuid: str):
         self.__state.pop(uuid)

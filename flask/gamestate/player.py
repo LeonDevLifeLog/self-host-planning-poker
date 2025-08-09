@@ -8,7 +8,8 @@ class Player:
     def __init__(self, name: str, spectator: bool):
         self.name = name
         self.__hand = None
-        self.spectator = spectator
+        self.spectator = spectator 
+        self.master = False
 
     def set_hand(self, hand: int):
         if self.spectator is True:
@@ -29,7 +30,8 @@ class Player:
         return {
             'name': self.name,
             'spectator': self.spectator,
-            'hasPicked': self.has_picked_card()
+            'hasPicked': self.has_picked_card(),
+            'master': self.master
         }
 
     def state_with_hand(self) -> dict:
@@ -38,5 +40,6 @@ class Player:
             'name': self.name,
             'spectator': self.spectator,
             'hand': self.__hand,
-            'hasPicked': self.has_picked_card()
+            'hasPicked': self.has_picked_card(),
+            'master': self.master
         }
